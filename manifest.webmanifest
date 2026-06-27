@@ -1,0 +1,18 @@
+{
+  "short_name": "奶油日記",
+  "name": "奶油風 AI 心情日記",
+  "description": "自動分類、量化心情與圖表化趨勢的本地優先日記 PWA。",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "./",
+  "scope": "./",
+  "background_color": "#fff8ed",
+  "theme_color": "#fff8ed",
+  "display": "standalone",
+  "orientation": "portrait"
+}

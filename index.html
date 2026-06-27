@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#fff8ed" />
+    <meta name="description" content="奶油風 AI 心情日記，寫下日常後自動分類、量化心情並產生趨勢圖表。" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>奶油日記 Corner</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Creamy Mood Diary</p>
+          <h1>奶油日記 Corner</h1>
+        </div>
+        <button class="icon-button" id="themeToggle" title="切換柔和模式" aria-label="切換柔和模式">
+          <svg aria-hidden="true"><use href="#icon-moon"></use></svg>
+        </button>
+      </header>
+
+      <main class="shell">
+        <section class="hero">
+          <div>
+            <p class="date-pill" id="todayLabel"></p>
+            <h2>今天的心，交給奶油慢慢化開。</h2>
+          </div>
+          <div class="ai-badge" id="aiStatus">自動分類啟用</div>
+        </section>
+
+        <nav class="tabs" aria-label="主要功能">
+          <button class="tab is-active" data-tab="write"><svg aria-hidden="true"><use href="#icon-pen"></use></svg><span>寫日記</span></button>
+          <button class="tab" data-tab="insights"><svg aria-hidden="true"><use href="#icon-chart"></use></svg><span>圖表</span></button>
+          <button class="tab" data-tab="history"><svg aria-hidden="true"><use href="#icon-list"></use></svg><span>紀錄</span></button>
+          <button class="tab" data-tab="settings"><svg aria-hidden="true"><use href="#icon-settings"></use></svg><span>設定</span></button>
+        </nav>
+
+        <section class="panel is-active" id="writePanel" aria-labelledby="writeTab">
+          <div class="editor-grid">
+            <div class="editor-card">
+              <div class="row between">
+                <label for="diaryInput">日記內容</label>
+                <span class="soft-note" id="wordCount">0 字</span>
+              </div>
+              <textarea id="diaryInput" maxlength="2200" placeholder="例如：今天工作報告被稱讚，但晚上和家人有點小摩擦。散步後心情慢慢變好。"></textarea>
+              <div class="quick-chips" id="quickChips" aria-label="快速加入情境"></div>
+              <div class="actions">
+                <button class="secondary" id="voiceBtn" type="button"><svg aria-hidden="true"><use href="#icon-mic"></use></svg><span>語音輸入</span></button>
+                <button class="secondary" id="sampleBtn" type="button"><svg aria-hidden="true"><use href="#icon-spark"></use></svg><span>試填範例</span></button>
+                <button class="primary" id="saveBtn" type="button"><svg aria-hidden="true"><use href="#icon-save"></use></svg><span>儲存並自動分析</span></button>
+              </div>
+            </div>
+
+            <aside class="summary-card" id="livePreview">
+              <p class="section-label">即時預判</p>
+              <p class="preview-state" id="previewStateLabel">穩定觀察</p>
+              <div class="score-orb">
+                <span id="previewScore">3.0</span>
+                <small>平均分</small>
+              </div>
+              <div class="tag-cloud" id="previewTags"></div>
+              <p class="advice" id="previewAdvice">寫下一點內容後，這裡會先用本地模型預判分類。</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="panel" id="insightsPanel">
+          <div class="charts">
+            <article class="chart-card wide">
+              <div class="chart-title">
+                <div>
+                  <p class="section-label">Trend</p>
+                  <h3>每日心情趨勢</h3>
+                </div>
+                <select id="rangeSelect" aria-label="選擇圖表期間">
+                  <option value="7">7 天</option>
+                  <option value="14">14 天</option>
+                  <option value="30">30 天</option>
+                </select>
+              </div>
+              <canvas id="trendChart" height="220"></canvas>
+              <p class="chart-note" id="trendNote">紀錄累積後會顯示近期心情走向。</p>
+            </article>
+            <article class="chart-card">
+              <div class="chart-title">
+                <div>
+                  <p class="section-label">Signal</p>
+                  <h3>情緒區間分布</h3>
+                </div>
+              </div>
+              <canvas id="signalChart" height="230"></canvas>
+              <p class="chart-note" id="signalNote">用紅、綠、藍看出近期低分、穩定、高分比例。</p>
+            </article>
+            <article class="chart-card">
+              <div class="chart-title">
+                <div>
+                  <p class="section-label">Stress</p>
+                  <h3>困擾來源排序</h3>
+                </div>
+              </div>
+              <canvas id="stressChart" height="230"></canvas>
+              <p class="chart-note" id="stressNote">幫你看出最常讓心情下降的是哪個類別。</p>
+            </article>
+            <article class="chart-card">
+              <div class="chart-title">
+                <div>
+                  <p class="section-label">Category</p>
+                  <h3>類別平均分</h3>
+                </div>
+              </div>
+              <canvas id="categoryChart" height="230"></canvas>
+              <p class="chart-note" id="categoryNote">分數越低，代表該類別近期比較需要照顧。</p>
+            </article>
+            <article class="chart-card">
+              <div class="chart-title">
+                <div>
+                  <p class="section-label">Balance</p>
+                  <h3>開心 / 困擾比例</h3>
+                </div>
+              </div>
+              <canvas id="balanceChart" height="230"></canvas>
+              <p class="chart-note" id="balanceNote">比較日記中開心、困擾與平淡事件的比例。</p>
+            </article>
+            <article class="chart-card wide">
+              <div class="chart-title">
+                <div>
+                  <p class="section-label">Weekly</p>
+                  <h3>本週類別熱度</h3>
+                </div>
+              </div>
+              <div class="heatmap" id="heatmap"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel" id="historyPanel">
+          <div class="history-tools">
+            <input id="searchInput" type="search" placeholder="搜尋文字、類別或建議" />
+            <select id="filterSelect" aria-label="分類篩選">
+              <option value="all">全部類別</option>
+            </select>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </section>
+
+        <section class="panel" id="settingsPanel">
+          <div class="settings-grid">
+            <article class="settings-block">
+              <p class="section-label">AI</p>
+              <h3>自主分析邏輯</h3>
+              <p>儲存日記時會自動分析，不需要另外輸入 prompt。若伺服器有設定 <code>GEMINI_API_KEY</code>，會優先使用 Gemini；否則使用本地規則模型。</p>
+              <button class="secondary" id="checkAiBtn" type="button"><svg aria-hidden="true"><use href="#icon-cpu"></use></svg><span>檢查 AI 狀態</span></button>
+            </article>
+            <article class="settings-block">
+              <p class="section-label">Sync</p>
+              <h3>跨裝置同步</h3>
+              <p>設定一組只有你知道的同步代碼。手機和電腦填同一組，就會同步同一批日記。</p>
+              <input id="syncKeyInput" type="password" placeholder="例如 my-cream-diary-2026" autocomplete="off" />
+              <div class="actions compact">
+                <button class="secondary" id="syncNowBtn" type="button"><svg aria-hidden="true"><use href="#icon-upload"></use></svg><span>同步資料</span></button>
+              </div>
+              <p class="sync-status" id="syncStatus">尚未設定同步代碼。</p>
+            </article>
+            <article class="settings-block">
+              <p class="section-label">Data</p>
+              <h3>資料備份</h3>
+              <p>日記保存在這台裝置的瀏覽器儲存空間，可匯出 JSON 備份，也可匯入還原。</p>
+              <div class="actions compact">
+                <button class="secondary" id="exportBtn" type="button"><svg aria-hidden="true"><use href="#icon-download"></use></svg><span>匯出 JSON</span></button>
+                <label class="file-button" for="importFile"><svg aria-hidden="true"><use href="#icon-upload"></use></svg><span>匯入 JSON</span></label>
+                <input id="importFile" type="file" accept="application/json" hidden />
+              </div>
+            </article>
+            <article class="settings-block danger-zone">
+              <p class="section-label">Reset</p>
+              <h3>清除本機資料</h3>
+              <p>這只會刪除目前瀏覽器裡的日記，不會影響你已匯出的備份檔。</p>
+              <button class="danger" id="clearBtn" type="button"><svg aria-hidden="true"><use href="#icon-trash"></use></svg><span>清除全部日記</span></button>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="entryTemplate">
+      <article class="entry">
+        <div class="entry-head">
+          <div>
+            <p class="entry-date"></p>
+            <h3 class="entry-title"></h3>
+          </div>
+          <div class="entry-score"></div>
+        </div>
+        <p class="entry-content"></p>
+        <div class="entry-tags"></div>
+        <p class="entry-advice"></p>
+        <button class="text-button delete-entry" type="button"><svg aria-hidden="true"><use href="#icon-trash"></use></svg><span>刪除</span></button>
+      </article>
+    </template>
+
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A7.6 7.6 0 0 1 9.8 3.5a8.7 8.7 0 1 0 10.7 10.7Z"/></symbol>
+      <symbol id="icon-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+      <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 3-4 3 2 4-6"/></symbol>
+      <symbol id="icon-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.05.05a2.1 2.1 0 1 1-3 3l-.05-.05a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1 1.64V21a2.1 2.1 0 1 1-4.2 0v-.08a1.8 1.8 0 0 0-1-1.64 1.8 1.8 0 0 0-2 .36l-.05.05a2.1 2.1 0 1 1-3-3l.05-.05a1.8 1.8 0 0 0 .36-2 1.8 1.8 0 0 0-1.64-1H3a2.1 2.1 0 1 1 0-4.2h.08a1.8 1.8 0 0 0 1.64-1 1.8 1.8 0 0 0-.36-2l-.05-.05a2.1 2.1 0 1 1 3-3l.05.05a1.8 1.8 0 0 0 2 .36 1.8 1.8 0 0 0 1-1.64V3a2.1 2.1 0 1 1 4.2 0v.08a1.8 1.8 0 0 0 1 1.64 1.8 1.8 0 0 0 2-.36l.05-.05a2.1 2.1 0 1 1 3 3l-.05.05a1.8 1.8 0 0 0-.36 2 1.8 1.8 0 0 0 1.64 1H21a2.1 2.1 0 1 1 0 4.2h-.08a1.8 1.8 0 0 0-1.52.96Z"/></symbol>
+      <symbol id="icon-mic" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3"/><path d="M8 21h8"/></symbol>
+      <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 3 1.4 4.5L18 9l-4.6 1.5L12 15l-1.4-4.5L6 9l4.6-1.5Z"/><path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8Z"/><path d="m5 14 .8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8Z"/></symbol>
+      <symbol id="icon-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></symbol>
+      <symbol id="icon-cpu" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 15h3"/><path d="M1 9h3"/><path d="M1 15h3"/></symbol>
+      <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol>
+      <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+    </svg>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

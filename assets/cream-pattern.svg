@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="wash" x1="0" y1="0" x2="900" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fffdf8"/>
+      <stop offset=".48" stop-color="#fff1d6"/>
+      <stop offset="1" stop-color="#f8e2d9"/>
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <rect width="900" height="300" fill="url(#wash)"/>
+  <g filter="url(#blur)" opacity=".62">
+    <circle cx="135" cy="62" r="78" fill="#ffe1a8"/>
+    <circle cx="760" cy="84" r="92" fill="#f4c4bd"/>
+    <circle cx="628" cy="220" r="70" fill="#b7d5b6"/>
+    <circle cx="318" cy="218" r="62" fill="#b7d2df"/>
+  </g>
+  <path d="M0 222C110 169 175 260 279 205c95-51 163-34 249 2 116 49 202 31 372-44v137H0z" fill="#fff7e8" opacity=".68"/>
+  <path d="M0 86c98 42 164-18 285 28 88 34 166 55 281 9 118-47 208-26 334 30V0H0z" fill="#fffdf8" opacity=".45"/>
+</svg>
