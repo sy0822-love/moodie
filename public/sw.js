@@ -1,4 +1,4 @@
-const CACHE_NAME = "creamy-diary-v11";
+const CACHE_NAME = "creamy-diary-v12";
 const ASSETS = [
   "./",
   "./index.html",

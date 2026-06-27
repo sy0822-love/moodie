@@ -120,10 +120,14 @@ function normalizeAiResult(data) {
     const score = Number(value);
     if (Number.isFinite(score)) scores[key] = Math.max(1, Math.min(5, score));
   }
+  const avgScore = Object.values(scores).length
+    ? Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.values(scores).length
+    : Number(data.avgScore || 3);
   return {
     happy: Array.isArray(data.happy) ? data.happy.slice(0, 5) : [],
     unhappy: Array.isArray(data.unhappy) ? data.unhappy.slice(0, 5) : [],
     scores,
+    avgScore: Math.max(1, Math.min(5, avgScore)),
     recommendation: String(data.recommendation || "先照顧今天最需要被安放的感受。").slice(0, 80),
     source: "gemini"
   };
@@ -135,10 +139,12 @@ export async function analyzeWithGemini(content) {
   }
 
   const prompt = `請分析這篇心情日記，回傳純 JSON，不要 markdown。規則：
-1. happy 與 unhappy 放入你判斷出的情緒分類。
-2. scores 是 1 到 5 分，1-2 代表紅色警訊，3 代表穩定，4-5 代表正向明亮。
-3. recommendation 請給 30 字內溫柔具體建議。
-格式：{"happy":[],"unhappy":[],"scores":{},"recommendation":""}
+1. 只能使用這五個分類：感情、家庭、工作、學業、其他。
+2. happy 與 unhappy 放入你判斷出的分類名稱。
+3. scores 必須是物件，key 使用上述五分類中有出現或能判斷的分類，value 是 1 到 5 分。
+4. avgScore 是所有 scores 的平均分，1-2 代表紅色警訊，3 代表穩定，4-5 代表正向明亮。
+5. recommendation 請給 30 字內溫柔具體建議。
+格式：{"happy":[],"unhappy":[],"scores":{},"avgScore":3,"recommendation":""}
 日記：${content}`;
 
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {

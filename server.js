@@ -5,6 +5,7 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
+const publicRoot = join(root, "public");
 
 function loadEnvFile() {
   const envPath = join(root, ".env");
@@ -290,8 +291,8 @@ createServer(async (req, res) => {
     }
 
     const requested = normalize(url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname));
-    const filePath = join(root, requested);
-    if (!filePath.startsWith(root) || !existsSync(filePath)) {
+    const filePath = join(publicRoot, requested);
+    if (!filePath.startsWith(publicRoot) || !existsSync(filePath)) {
       send(res, 404, "Not found", "text/plain; charset=utf-8");
       return;
     }
