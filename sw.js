@@ -1,9 +1,9 @@
-const CACHE_NAME = "creamy-diary-v10";
+const CACHE_NAME = "creamy-diary-v11";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
-  "./app.js",
+  "./main.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
   "./assets/cream-pattern.svg"
