@@ -1,4 +1,4 @@
-import { analyzeWithGemini, send } from "./_shared.js";
+import { analyzeWithGemini, send } from "./shared.js";
 
 export default async function handler(req, res) {
   try {

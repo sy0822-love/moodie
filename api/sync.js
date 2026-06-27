@@ -1,4 +1,4 @@
-import { cleanSyncKey, listStoredEntries, send, upsertStoredEntries } from "./_shared.js";
+import { cleanSyncKey, listStoredEntries, send, upsertStoredEntries } from "./shared.js";
 
 export default async function handler(req, res) {
   try {

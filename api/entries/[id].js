@@ -1,4 +1,4 @@
-import { cleanSyncKey, deleteStoredEntry, readQuery, send } from "../_shared.js";
+import { cleanSyncKey, deleteStoredEntry, readQuery, send } from "../shared.js";
 
 export default async function handler(req, res) {
   try {

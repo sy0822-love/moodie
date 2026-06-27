@@ -1,4 +1,4 @@
-import { hasGemini, send, usingSupabase } from "./_shared.js";
+import { hasGemini, send, usingSupabase } from "./shared.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
