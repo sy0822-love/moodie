@@ -553,9 +553,16 @@ function setupCanvas(canvas) {
   const ratio = window.devicePixelRatio || 1;
   const fallbackWidth = canvas.parentElement?.clientWidth || document.documentElement.clientWidth || 360;
   const cssWidth = Math.max(280, Math.floor(rect.width || fallbackWidth));
+  if (!canvas.dataset.chartHeight) {
+    canvas.dataset.chartHeight = String(Number(canvas.getAttribute("height")) || 230);
+  }
+  const cssHeight = Math.max(180, Number(canvas.dataset.chartHeight) || 230);
+  canvas.style.width = "100%";
+  canvas.style.height = `${cssHeight}px`;
   canvas.width = Math.floor(cssWidth * ratio);
-  canvas.height = Math.floor(Number(canvas.getAttribute("height")) * ratio);
+  canvas.height = Math.floor(cssHeight * ratio);
   const ctx = canvas.getContext("2d");
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.scale(ratio, ratio);
   return { ctx, width: canvas.width / ratio, height: canvas.height / ratio };
 }
